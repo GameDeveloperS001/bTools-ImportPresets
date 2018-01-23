@@ -1,7 +1,16 @@
-# **bTools** - ImportPresets
+# **bTools - Plugins for Unity**  
+## Import Presets
 
-Part of bTools.
+**Automatically setup newly imported assets.**  
+*Requires bTools Core*
 
-API and Documentation at https://blobinet.github.io/bTools/
+### Features
+- Setup new Meshes, Textures and Audio assets
+- Disable/Enable presets
+- Filter based on path and filename
 
-Please feel free to post issues, pull requests and make suggestions !
+![image](https://i.imgur.com/inBM9Zo.png)
+
+For more information, check out the [API and Documentation](https://blobinet.github.io/bTools/)
+
+If you encounter any bugs or have any suggestions, please 
