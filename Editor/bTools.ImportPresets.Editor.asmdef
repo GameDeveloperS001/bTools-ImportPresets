@@ -1,0 +1,12 @@
+{
+    "name": "bTools.ImportPresets.Editor",
+    "references": [
+        "bTools.CodeExtensions",
+        "bTools.CodeExtensions.Editor",
+        "bTools.Core.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}
