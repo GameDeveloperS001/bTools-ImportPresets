@@ -22,7 +22,7 @@ namespace bTools.ImportPresets
 					if ( loadedSettings == null )
 					{
 						loadedSettings = ScriptableObject.CreateInstance<SavedImportSettings>();
-						string dataPath = Ressources.PathTo_bData;
+						string dataPath = bToolsResources.PathTo_bData;
 
 						AssetDatabase.CreateAsset( loadedSettings, dataPath + "/ImportSettingsPresets.asset" );
 						AssetDatabase.SaveAssets();

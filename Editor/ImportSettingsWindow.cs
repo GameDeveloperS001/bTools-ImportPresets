@@ -22,7 +22,7 @@ namespace bTools.ImportPresets
 		{
 			var window = GetWindow<ImportSettingsWindow>( string.Empty, true );
 
-			window.titleContent = new GUIContent( "Import", Ressources.bToolsSkin.FindStyle( "settings" ).normal.background, "Asset Import Presets Configuration" );
+			window.titleContent = new GUIContent( "Import", bToolsResources.bToolsSkin.FindStyle( "settings" ).normal.background, "Asset Import Presets Configuration" );
 			window.minSize = new Vector2( 800, 600 );
 			Undo.undoRedoPerformed += () =>
 			{
