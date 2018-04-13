@@ -27,17 +27,17 @@ namespace bTools.ImportPresets
 
 		protected void DrawFilterGUI()
 		{
-			EditorGUILayout.LabelField( "Preset Settings", EditorStyles.boldLabel );
-			EditorGUI.DrawRect( EditorGUILayout.GetControlRect( false, 2 ), Colors.DarkGrayX11 );
-			GUILayout.Space( 3 );
+			EditorGUILayout.LabelField("Preset Settings", EditorStyles.boldLabel);
+			EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false, 2), Colors.DarkGrayX11);
+			GUILayout.Space(3);
 
-			saveName = EditorGUILayout.TextField( new GUIContent( "Name", "Only used for organisation" ), saveName );
-			pathNameFilter = EditorGUILayout.TextField( new GUIContent( "Path Contains Filter", "Applied only if the path contains this string. Leave empty to apply to all paths. Separate multiple filters with ;" ), pathNameFilter );
-			fileNameFilter = EditorGUILayout.TextField( new GUIContent( "Filename Contains Filter", "Applied only if the filename contains this string. Leave empty to apply to all filenames. Separate multiple filters with ;" ), fileNameFilter );
+			saveName = EditorGUILayout.TextField(new GUIContent("Name", "Only used for organisation"), saveName);
+			pathNameFilter = EditorGUILayout.TextField(new GUIContent("Path Contains Filter", "Applied only if the path contains this string. Leave empty to apply to all paths. Separate multiple filters with ;"), pathNameFilter);
+			fileNameFilter = EditorGUILayout.TextField(new GUIContent("Filename Contains Filter", "Applied only if the filename contains this string. Leave empty to apply to all filenames. Separate multiple filters with ;"), fileNameFilter);
 
-			if ( pathNameFilter.Length == 0 && fileNameFilter.Length == 0 )
+			if (pathNameFilter.Length == 0 && fileNameFilter.Length == 0)
 			{
-				EditorGUILayout.HelpBox( "Empty filters means this will be applied to all imported meshes", MessageType.Info );
+				EditorGUILayout.HelpBox("Empty filters means this will be applied to all imported meshes", MessageType.Info);
 			}
 		}
 	}
