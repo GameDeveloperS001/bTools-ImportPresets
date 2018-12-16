@@ -1,8 +1,6 @@
 # **bTools - Plugins for Unity**  
 ## Import Presets
 
-**! Deprecated by built-in presets !**
-
 **Automatically setup newly imported assets.**  
 *Requires bTools Core*
 
@@ -13,6 +11,6 @@
 
 ![image](https://i.imgur.com/inBM9Zo.png)
 
-For more information, check out the [API and Documentation](https://blobinet.github.io/bTools/)
+For more information, check out the [API and Documentation](https://btools.gitlab.io/btools-documentation-pages/)
 
-If you encounter any bugs or have any suggestions, please 
+If you encounter any bugs or have any suggestions, please post an issue or merge request !
