@@ -1,44 +1,109 @@
-﻿using bTools.CodeExtensions;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using bTools.CodeExtensions;
 using UnityEditor;
 using UnityEngine;
+using UnityEditor.Presets;
 
 namespace bTools.ImportPresets
 {
-	public abstract class ImportConfigBase
-	{
-		//GUI settings
-		protected bool folded = false;
+    public abstract class ImportConfigBase
+    {
+        //GUI settings
+        protected bool folded = false;
+        public static readonly Color HeaderSeparatorColor = new Color32(237, 166, 3, 255);
+        private char[] filterSep = new char[] { ';' };
+        private string matchingPaths;
 
-		//Utilities
-		[HideInInspector]
-		public bool tagForDeletion = false;
-		[HideInInspector]
-		public int positionOffset = 0;
-		[SerializeField]
-		public string saveName = "New Preset";
-		[SerializeField]
-		public string pathNameFilter = string.Empty;
-		[SerializeField]
-		public string fileNameFilter = string.Empty;
-		[SerializeField]
-		public bool isEnabled = true;
+        //Utilities
+        [HideInInspector] public bool tagForDeletion = false;
+        [HideInInspector] public int positionOffset = 0;
+        [SerializeField] public string saveName = "New Preset";
+        [SerializeField] public string pathNameFilter = string.Empty;
+        [SerializeField] public string fileNameFilter = string.Empty;
+        [SerializeField] public bool isEnabled = true;
+        [SerializeField] public Preset targetPreset;
 
-		public abstract void DrawInnerGUI();
+        Editor cachedPresetEditor;
 
-		protected void DrawFilterGUI()
-		{
-			EditorGUILayout.LabelField("Preset Settings", EditorStyles.boldLabel);
-			EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false, 2), Colors.DarkGrayX11);
-			GUILayout.Space(3);
+        public abstract void DrawInnerGUI();
 
-			saveName = EditorGUILayout.TextField(new GUIContent("Name", "Only used for organisation"), saveName);
-			pathNameFilter = EditorGUILayout.TextField(new GUIContent("Path Contains Filter", "Applied only if the path contains this string. Leave empty to apply to all paths. Separate multiple filters with ;"), pathNameFilter);
-			fileNameFilter = EditorGUILayout.TextField(new GUIContent("Filename Contains Filter", "Applied only if the filename contains this string. Leave empty to apply to all filenames. Separate multiple filters with ;"), fileNameFilter);
+        protected void DrawFilterGUI()
+        {
+            EditorGUILayout.LabelField("Preset Settings", EditorStyles.boldLabel);
+            EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false, 2), HeaderSeparatorColor);
+            GUILayout.Space(3);
 
-			if (pathNameFilter.Length == 0 && fileNameFilter.Length == 0)
-			{
-				EditorGUILayout.HelpBox("Empty filters means this will be applied to all imported meshes", MessageType.Info);
-			}
-		}
-	}
+            saveName = EditorGUILayout.TextField(new GUIContent("Name", "Only used for organisation"), saveName);
+            EditorGUI.BeginChangeCheck();
+            pathNameFilter = EditorGUILayout.DelayedTextField(new GUIContent("Path Contains Filter", "Applied only if the path contains this string. Leave empty to apply to all paths. Separate multiple filters with ;"), pathNameFilter);
+            fileNameFilter = EditorGUILayout.DelayedTextField(new GUIContent("Filename Contains Filter", "Applied only if the filename contains this string. Leave empty to apply to all filenames. Separate multiple filters with ;"), fileNameFilter);
+            if (EditorGUI.EndChangeCheck())
+            {
+                pathNameFilter = pathNameFilter.Replace('/', '\\');
+                fileNameFilter = fileNameFilter.Replace('/', '\\');
+                matchingPaths = GetMatchingPaths();
+            }
+
+            //EditorGUILayout.HelpBox(matchingPaths, MessageType.Info);
+            EditorGUILayout.LabelField(matchingPaths, EditorStyles.helpBox);
+
+            targetPreset = EditorGUILayout.ObjectField("Preset", targetPreset, typeof(Preset), false) as Preset;
+            if (targetPreset != null)
+            {
+                Editor.CreateCachedEditor(targetPreset, null, ref cachedPresetEditor);
+                if (cachedPresetEditor != null) cachedPresetEditor.OnInspectorGUI();
+            }
+        }
+
+        protected string GetMatchingPaths()
+        {
+            if (pathNameFilter.Length == 0 && fileNameFilter.Length == 0)
+            {
+                return "Empty filters means this will be applied to everything";
+            }
+
+            StringBuilder matchingPaths = new StringBuilder();
+            foreach (var item in Directory.GetDirectories(Application.dataPath, "*", SearchOption.AllDirectories))
+            {
+                if (PathFilterTest(item))
+                {
+                    matchingPaths.Append("Assets" + item.Replace(Application.dataPath, string.Empty) + "\r\n");
+                }
+            }
+
+            if (matchingPaths.Length == 0)
+            {
+                matchingPaths.Append("No match");
+            }
+
+            return matchingPaths.ToString();
+        }
+
+        private bool PathFilterTest(string path)
+        {
+            bool pathTest = false;
+
+            // Split string into multiple filters
+            string[] pathFilterSplit = pathNameFilter.Split(filterSep, System.StringSplitOptions.RemoveEmptyEntries);
+
+            //Check if filter is empty
+            if (pathNameFilter == string.Empty)
+            {
+                pathTest = true;
+            }
+
+            // Check if path contains what we want
+            for (int i = 0; i < pathFilterSplit.Length; i++)
+            {
+                if (path.Contains(pathFilterSplit[i]))
+                {
+                    pathTest = true;
+                }
+            }
+
+            return pathTest;
+        }
+    }
 }
