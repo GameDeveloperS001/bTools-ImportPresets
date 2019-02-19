@@ -1,22 +1,19 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
 namespace bTools.ImportPresets
 {
-
     [System.Serializable]
     public class SavedImportSettings : ScriptableObject
     {
         [SerializeField]
         [HideInInspector]
-        public List<MeshImportConfig> meshImportSettingsList = new List<MeshImportConfig>();
+        public List<ImportConfigBase> meshImportSettingsList = new List<ImportConfigBase>();
         [SerializeField]
         [HideInInspector]
-        public List<AudioImportConfig> audioImportSettingsList = new List<AudioImportConfig>();
+        public List<ImportConfigBase> audioImportSettingsList = new List<ImportConfigBase>();
         [SerializeField]
         [HideInInspector]
-        public List<TextureImportConfig> textureImportSettingsList = new List<TextureImportConfig>();
+        public List<ImportConfigBase> textureImportSettingsList = new List<ImportConfigBase>();
     }
 }

@@ -12,7 +12,6 @@ namespace bTools.ImportPresets
     {
         //GUI settings
         protected bool folded = false;
-        public static readonly Color HeaderSeparatorColor = new Color32(237, 166, 3, 255);
         private char[] filterSep = new char[] { ';' };
         private string matchingPaths;
 
@@ -32,9 +31,10 @@ namespace bTools.ImportPresets
         protected void DrawFilterGUI()
         {
             EditorGUILayout.LabelField("Preset Settings", EditorStyles.boldLabel);
-            EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false, 2), HeaderSeparatorColor);
+            EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false, 2), ImportSettingsWindow.HeaderSeparatorColor);
             GUILayout.Space(3);
 
+            EditorGUI.BeginChangeCheck();
             saveName = EditorGUILayout.TextField(new GUIContent("Name", "Only used for organisation"), saveName);
             EditorGUI.BeginChangeCheck();
             pathNameFilter = EditorGUILayout.DelayedTextField(new GUIContent("Path Contains Filter", "Applied only if the path contains this string. Leave empty to apply to all paths. Separate multiple filters with ;"), pathNameFilter);
@@ -55,7 +55,13 @@ namespace bTools.ImportPresets
                 Editor.CreateCachedEditor(targetPreset, null, ref cachedPresetEditor);
                 if (cachedPresetEditor != null) cachedPresetEditor.OnInspectorGUI();
             }
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                EditorUtility.SetDirty(ImportProcessing.ImportSettingsData);
+            }
         }
+
 
         protected string GetMatchingPaths()
         {
@@ -81,7 +87,33 @@ namespace bTools.ImportPresets
             return matchingPaths.ToString();
         }
 
-        private bool PathFilterTest(string path)
+        internal bool FilenameFilterTest(string path)
+        {
+            bool filenameTest = false;
+
+            // Split string into multiple filters
+            string[] filenameFilterSplit = fileNameFilter.Split(filterSep, System.StringSplitOptions.RemoveEmptyEntries);
+            string fileName = Path.GetFileName(path);
+
+            //Check if filter is empty
+            if (fileNameFilter == string.Empty)
+            {
+                filenameTest = true;
+            }
+
+            // Check if filename contains what we want
+            for (int i = 0; i < filenameFilterSplit.Length; i++)
+            {
+                if (path.Contains(filenameFilterSplit[i]))
+                {
+                    filenameTest = true;
+                }
+            }
+
+            return filenameTest;
+        }
+
+        internal bool PathFilterTest(string path)
         {
             bool pathTest = false;
 
