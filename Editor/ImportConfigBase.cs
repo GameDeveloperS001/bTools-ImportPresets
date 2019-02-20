@@ -5,15 +5,22 @@ using bTools.CodeExtensions;
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.Presets;
+using UnityEditorInternal;
 
 namespace bTools.ImportPresets
 {
+    [System.Serializable]
     public abstract class ImportConfigBase
     {
         //GUI settings
         protected bool folded = false;
         private char[] filterSep = new char[] { ';' };
         private string matchingPaths;
+        private ReorderableList pathFilterList;
+        private Vector2 orderableListScroll;
+        private bool colorToggle;
+        private bool showPathFilter;
+        private List<string> filters = new List<string>();
 
         //Utilities
         [HideInInspector] public bool tagForDeletion = false;
@@ -30,38 +37,104 @@ namespace bTools.ImportPresets
 
         protected void DrawFilterGUI()
         {
-            EditorGUILayout.LabelField("Preset Settings", EditorStyles.boldLabel);
-            EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false, 2), ImportSettingsWindow.HeaderSeparatorColor);
-            GUILayout.Space(3);
 
-            EditorGUI.BeginChangeCheck();
-            saveName = EditorGUILayout.TextField(new GUIContent("Name", "Only used for organisation"), saveName);
-            EditorGUI.BeginChangeCheck();
-            pathNameFilter = EditorGUILayout.DelayedTextField(new GUIContent("Path Contains Filter", "Applied only if the path contains this string. Leave empty to apply to all paths. Separate multiple filters with ;"), pathNameFilter);
-            fileNameFilter = EditorGUILayout.DelayedTextField(new GUIContent("Filename Contains Filter", "Applied only if the filename contains this string. Leave empty to apply to all filenames. Separate multiple filters with ;"), fileNameFilter);
-            if (EditorGUI.EndChangeCheck())
+            using (new EditorGUILayout.HorizontalScope())
             {
-                pathNameFilter = pathNameFilter.Replace('/', '\\');
-                fileNameFilter = fileNameFilter.Replace('/', '\\');
-                matchingPaths = GetMatchingPaths();
+                EditorGUILayout.LabelField("Preset Settings: ", EditorStyles.boldLabel, GUILayout.Width(110));
+                saveName = EditorGUILayout.TextField(saveName);
             }
 
-            //EditorGUILayout.HelpBox(matchingPaths, MessageType.Info);
-            EditorGUILayout.LabelField(matchingPaths, EditorStyles.helpBox);
+            GUILayout.Space(2);
+            EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false, 2), ImportPresetsResources.HeaderSeparatorColor);
+            GUILayout.Space(2);
 
-            targetPreset = EditorGUILayout.ObjectField("Preset", targetPreset, typeof(Preset), false) as Preset;
-            if (targetPreset != null)
-            {
-                Editor.CreateCachedEditor(targetPreset, null, ref cachedPresetEditor);
-                if (cachedPresetEditor != null) cachedPresetEditor.OnInspectorGUI();
-            }
+            showPathFilter = EditorGUILayout.Foldout(showPathFilter, "Show Path Filter");
+            if (showPathFilter) DrawPathFilters();
 
-            if (EditorGUI.EndChangeCheck())
-            {
-                EditorUtility.SetDirty(ImportProcessing.ImportSettingsData);
-            }
+            // EditorGUI.BeginChangeCheck();
+            // saveName = EditorGUILayout.TextField(new GUIContent("Name", "Only used for organisation"), saveName);
+            // EditorGUI.BeginChangeCheck();
+            // pathNameFilter = EditorGUILayout.DelayedTextField(new GUIContent("Path Contains Filter", "Applied only if the path contains this string. Leave empty to apply to all paths. Separate multiple filters with ;"), pathNameFilter);
+            // fileNameFilter = EditorGUILayout.DelayedTextField(new GUIContent("Filename Contains Filter", "Applied only if the filename contains this string. Leave empty to apply to all filenames. Separate multiple filters with ;"), fileNameFilter);
+            // if (EditorGUI.EndChangeCheck())
+            // {
+            //     pathNameFilter = pathNameFilter.Replace('/', '\\');
+            //     fileNameFilter = fileNameFilter.Replace('/', '\\');
+            //     matchingPaths = GetMatchingPaths();
+            // }
+
+            // //EditorGUILayout.HelpBox(matchingPaths, MessageType.Info);
+            // EditorGUILayout.LabelField(matchingPaths, EditorStyles.helpBox);
+
+            // targetPreset = EditorGUILayout.ObjectField("Preset", targetPreset, typeof(Preset), false) as Preset;
+            // if (targetPreset != null)
+            // {
+            //     Editor.CreateCachedEditor(targetPreset, null, ref cachedPresetEditor);
+            //     if (cachedPresetEditor != null) cachedPresetEditor.OnInspectorGUI();
+            // }
+
+            // if (EditorGUI.EndChangeCheck())
+            // {
+            //     EditorUtility.SetDirty(ImportPresetsResources.ImportSettingsData);
+            // }
         }
 
+        private void DrawPathFilters()
+        {
+            if (pathFilterList == null)
+            {
+                pathFilterList = new ReorderableList(filters, typeof(string), true, false, false, false);
+                pathFilterList.showDefaultBackground = false;
+                pathFilterList.headerHeight = 0;
+                pathFilterList.footerHeight = 0;
+                pathFilterList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
+                {
+                    string elem = filters[index];
+                    Rect labelRect = new Rect(rect) { y = rect.y + 2, yMax = rect.yMax - 5 };
+
+                    if (elem == ImportPresetsResources.ORFilterString)
+                    {
+                        //EditorGUI.DrawRect(rect, Colors.BlueBolt);
+                        GUI.Label(labelRect, "OR");
+                        colorToggle = !colorToggle;
+                    }
+                    else
+                    {
+                        EditorGUI.DrawRect(rect, colorToggle ? Colors.EtonBlue.WithAlpha(0.5f) : Colors.FaluRed.WithAlpha(0.5f));
+                        filters[index] = GUI.TextField(labelRect, filters[index]);
+                    }
+                };
+            }
+
+            GUILayout.Space(2);
+
+            using (new GUILayout.HorizontalScope())
+            {
+                GUILayout.Space(4);
+
+                if (GUILayout.Button("Remove", EditorStyles.miniButtonLeft))
+                {
+                    if (pathFilterList.index >= 0 && (filters.Count - 1) >= pathFilterList.index)
+                    {
+                        Undo.RecordObject(ImportPresetsResources.ImportSettingsData, "Removed Filter");
+                        filters.RemoveAt(pathFilterList.index);
+                        pathFilterList.index = Mathf.Max(0, pathFilterList.index - 1);
+                        pathFilterList.GrabKeyboardFocus();
+                    }
+                }
+
+                if (GUILayout.Button("Add", EditorStyles.miniButtonMid)) filters.Add(string.Empty);
+                if (GUILayout.Button("Or", EditorStyles.miniButtonRight)) filters.Add(ImportPresetsResources.ORFilterString);
+
+                GUILayout.FlexibleSpace();
+            }
+
+            GUILayout.Space(4);
+
+            pathFilterList.DoLayoutList();
+
+            EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false, 2), ImportPresetsResources.HeaderSeparatorColor);
+        }
 
         protected string GetMatchingPaths()
         {

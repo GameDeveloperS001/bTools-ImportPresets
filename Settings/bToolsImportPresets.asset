@@ -12,3 +12,154 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63e2d4362425b2c4999a430211e9eb56, type: 3}
   m_Name: bToolsImportPresets
   m_EditorClassIdentifier: 
+  meshImportSettingsList:
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: Beautiful Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 0
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: Heya
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 2655988077585873504, guid: d6a373f4f6ed3f341b16881e279a50c6,
+      type: 2}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 0
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 0}
+  - tagForDeletion: 0
+    positionOffset: 0
+    saveName: New Preset
+    pathNameFilter: 
+    fileNameFilter: 
+    isEnabled: 1
+    targetPreset: {fileID: 0}
+  audioImportSettingsList: []
+  textureImportSettingsList: []

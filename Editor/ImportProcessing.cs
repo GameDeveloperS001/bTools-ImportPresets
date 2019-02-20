@@ -11,54 +11,20 @@ namespace bTools.ImportPresets
     {
         private char[] filterSep = new char[] { ';' };
 
-        internal static string k_settingsAssetPath
-        {
-            get
-            {
-                string path = Directory.GetDirectories(Application.dataPath, "bTools", SearchOption.AllDirectories)[0];
-                path = path.Replace(Application.dataPath, "Assets");
-                path = path.Replace('\\', '/');
-                path = path + @"/ImportPresets/Settings/bToolsImportPresets.asset";
-
-                return path;
-            }
-        }
-
-        private static SavedImportSettings m_importSettingsData;
-        public static SavedImportSettings ImportSettingsData
-        {
-            get
-            {
-                if (m_importSettingsData == null)
-                {
-                    if (!Directory.Exists(Path.GetDirectoryName(k_settingsAssetPath))) Directory.CreateDirectory(Path.GetDirectoryName(k_settingsAssetPath));
-                    var settings = AssetDatabase.LoadAssetAtPath<SavedImportSettings>(k_settingsAssetPath);
-                    if (m_importSettingsData == null)
-                    {
-                        m_importSettingsData = ScriptableObject.CreateInstance<SavedImportSettings>();
-                        AssetDatabase.CreateAsset(m_importSettingsData, k_settingsAssetPath);
-                        AssetDatabase.SaveAssets();
-                    }
-                }
-
-                return m_importSettingsData;
-            }
-        }
-
-
         private void OnPreprocessModel()
         {
-            ApplyImportPresets(ImportSettingsData.meshImportSettingsList);
+            //ApplyImportPresets(ImportSettingsData.meshImportSettingsList);
+
         }
 
         private void OnPreprocessAudio()
         {
-            ApplyImportPresets(ImportSettingsData.audioImportSettingsList);
+            //ApplyImportPresets(ImportSettingsData.audioImportSettingsList);
         }
 
         private void OnPreprocessTexture()
         {
-            ApplyImportPresets(ImportSettingsData.textureImportSettingsList);
+            //ApplyImportPresets(ImportSettingsData.textureImportSettingsList);
         }
 
         private void ApplyImportPresets(List<ImportConfigBase> presets)
