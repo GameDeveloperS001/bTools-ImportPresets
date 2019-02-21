@@ -68,7 +68,7 @@ namespace bTools.ImportPresets
             #region Right Pane - Settings Data
             Rect rightPane = new Rect(insetRect) { x = leftPane.xMax + 4, xMax = windowRect.xMax - 4 };
 
-            using (new GUILayout.AreaScope(rightPane, string.Empty, EditorStyles.helpBox))
+            //using (new GUILayout.AreaScope(rightPane, string.Empty, EditorStyles.helpBox))
             {
                 if (0 > presetOrderableList.index) presetOrderableList.index = 0;
 
@@ -83,19 +83,19 @@ namespace bTools.ImportPresets
                             if (presetOrderableList.index >= ImportPresetsResources.ImportSettingsData.meshImportSettingsList.Count)
                                 presetOrderableList.index = 0;
                             if (ImportPresetsResources.ImportSettingsData.meshImportSettingsList.Count > 0)
-                                ImportPresetsResources.ImportSettingsData.meshImportSettingsList[presetOrderableList.index].DrawInnerGUI();
+                                ImportPresetsResources.ImportSettingsData.meshImportSettingsList[presetOrderableList.index].DrawInnerGUI(rightPane);
                             break;
                         case 1: // Texture
                             if (presetOrderableList.index >= ImportPresetsResources.ImportSettingsData.textureImportSettingsList.Count)
                                 presetOrderableList.index = 0;
                             if (ImportPresetsResources.ImportSettingsData.textureImportSettingsList.Count > 0)
-                                ImportPresetsResources.ImportSettingsData.textureImportSettingsList[presetOrderableList.index].DrawInnerGUI();
+                                ImportPresetsResources.ImportSettingsData.textureImportSettingsList[presetOrderableList.index].DrawInnerGUI(rightPane);
                             break;
                         case 2: // Audio
                             if (presetOrderableList.index >= ImportPresetsResources.ImportSettingsData.audioImportSettingsList.Count)
                                 presetOrderableList.index = 0;
                             if (ImportPresetsResources.ImportSettingsData.audioImportSettingsList.Count > 0)
-                                ImportPresetsResources.ImportSettingsData.audioImportSettingsList[presetOrderableList.index].DrawInnerGUI();
+                                ImportPresetsResources.ImportSettingsData.audioImportSettingsList[presetOrderableList.index].DrawInnerGUI(rightPane);
                             break;
                     }
                 }
@@ -133,17 +133,6 @@ namespace bTools.ImportPresets
             {
                 GUILayout.Space(4);
 
-                if (GUILayout.Button(ImportPresetsResources.PlusIcon, GUIStyle.none, GUILayout.Width(16)))
-                {
-                    Undo.RecordObject(ImportPresetsResources.ImportSettingsData, "Added Import Preset");
-                    list.Add(Activator.CreateInstance(listType));
-                    presetOrderableList.index = list.Count - 1;
-                    presetOrderableList.GrabKeyboardFocus();
-                    settingsScroll.y = float.MaxValue;
-                }
-
-                GUILayout.Space(4);
-
                 if (GUILayout.Button(ImportPresetsResources.MinusIcon, GUIStyle.none, GUILayout.Width(16)))
                 {
                     if (presetOrderableList.index >= 0 && (list.Count - 1) >= presetOrderableList.index)
@@ -153,6 +142,17 @@ namespace bTools.ImportPresets
                         presetOrderableList.index = Mathf.Max(0, presetOrderableList.index - 1);
                         presetOrderableList.GrabKeyboardFocus();
                     }
+                }
+
+                GUILayout.Space(4);
+
+                if (GUILayout.Button(ImportPresetsResources.PlusIcon, GUIStyle.none, GUILayout.Width(16)))
+                {
+                    Undo.RecordObject(ImportPresetsResources.ImportSettingsData, "Added Import Preset");
+                    list.Add(Activator.CreateInstance(listType));
+                    presetOrderableList.index = list.Count - 1;
+                    presetOrderableList.GrabKeyboardFocus();
+                    settingsScroll.y = float.MaxValue;
                 }
 
                 GUILayout.FlexibleSpace();

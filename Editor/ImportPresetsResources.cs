@@ -69,6 +69,5 @@ namespace bTools.ImportPresets
         }
 
         internal static readonly Color HeaderSeparatorColor = new Color32(237, 166, 3, 255);
-        internal static readonly string ORFilterString = "[%OR%]";
     }
 }
