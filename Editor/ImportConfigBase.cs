@@ -1,40 +1,26 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using bTools.CodeExtensions;
-using UnityEditor;
-using UnityEngine;
-using UnityEditor.Presets;
+﻿using UnityEngine;
 using UnityEditorInternal;
+using UnityEditor.Presets;
+using UnityEditor;
+using System.Text;
+using System.IO;
+using System.Collections.Generic;
 using System;
+using bTools.CodeExtensions;
 
 namespace bTools.ImportPresets
 {
     [System.Serializable]
-    public abstract class ImportConfigBase
+    public class ImportConfig
     {
-        //GUI settings
-        //protected bool folded = false;
-        private char[] filterSep = new char[] { ';' };
-        private string matchingPaths;
-
-
         // Data
-        [HideInInspector] public bool tagForDeletion = false;
-        [HideInInspector] public int positionOffset = 0;
-        [SerializeField] public string pathNameFilter = string.Empty;
-        [SerializeField] public string fileNameFilter = string.Empty;
-
-
-
-        // New Data
         [SerializeField] public string saveName = "New Preset";
         [SerializeField] public bool isEnabled = true;
         [SerializeField] public Preset targetPreset;
         [SerializeField] public List<string> pathFilters = new List<string>();
         [SerializeField] public List<string> filenameFilters = new List<string>();
 
-        // New GUI
+        // GUI
         private bool showPathFilter;
         private Vector2 pathFilterListScroll;
         private ReorderableList pathFilterList;
@@ -47,16 +33,20 @@ namespace bTools.ImportPresets
         private Vector2 presetScroll;
         Editor cachedPresetEditor;
 
-        public virtual void DrawInnerGUI(Rect areaRect)
+        internal void DrawGUI(Rect areaRect)
         {
-            Rect titleArea = new Rect(areaRect) { height = 24 };
-
+            Rect titleArea = new Rect(areaRect) { height = 22 };
             using (new GUILayout.AreaScope(titleArea, string.Empty, EditorStyles.helpBox))
             {
                 using (new EditorGUILayout.HorizontalScope())
                 {
-                    EditorGUILayout.LabelField("Preset Settings: ", EditorStyles.boldLabel, GUILayout.Width(110));
+                    EditorGUILayout.LabelField("Import Preset: ", EditorStyles.boldLabel, GUILayout.Width(100));
                     saveName = EditorGUILayout.TextField(saveName);
+                    if (GUILayout.Button("Preview", EditorStyles.miniButton))
+                    {
+                        Rect popupRect = new Rect(areaRect) { x = areaRect.width - 32, y = 0, height = 4 };
+                        PopupWindow.Show(popupRect, new FilterPreviewPopup(areaRect.height, GetMatchingPaths()));
+                    }
                 }
             }
 
@@ -69,7 +59,7 @@ namespace bTools.ImportPresets
 
             // Draw preset
             if (showPreset) filtersRect.yMax = areaRect.yMax;
-            else filtersRect.height = 24;
+            else filtersRect.height = 22;
 
             using (new GUILayout.AreaScope(filtersRect, string.Empty, EditorStyles.helpBox))
             {
@@ -96,7 +86,7 @@ namespace bTools.ImportPresets
                     }
                     else
                     {
-                        EditorGUILayout.LabelField("No preset :(");
+                        EditorGUILayout.LabelField("No preset - Add one !");
                     }
                 }
             }
@@ -110,6 +100,10 @@ namespace bTools.ImportPresets
                 filterList.showDefaultBackground = false;
                 filterList.headerHeight = 0;
                 filterList.footerHeight = 0;
+                filterList.drawNoneElementCallback = (Rect rect) =>
+                {
+                    GUI.Label(rect, "No Filter - Everything will be accepted");
+                };
                 filterList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
                 {
                     Rect textRect = new Rect(rect) { y = rect.y + 1, yMax = rect.yMax - 4 };
@@ -117,10 +111,10 @@ namespace bTools.ImportPresets
                 };
             }
 
-            float pathFilterAreaHeight = 24;
+            float pathFilterAreaHeight = 22;
             if (showFilter)
             {
-                pathFilterAreaHeight = (listData.Count == 0 ? 58 : 42) + filterList.elementHeight * listData.Count;
+                pathFilterAreaHeight = (listData.Count == 0 ? 50 : 38) + filterList.elementHeight * listData.Count;
                 pathFilterAreaHeight = Mathf.Min(pathFilterAreaHeight, 175);
             }
 
@@ -138,7 +132,7 @@ namespace bTools.ImportPresets
                         {
                             if (filterList.index >= 0 && (listData.Count - 1) >= filterList.index)
                             {
-                                Undo.RecordObject(ImportPresetsResources.ImportSettingsData, "Removed Path Filter");
+                                Undo.RecordObject(ImportPresetsResources.ImportSettingsData, "Removed Filter");
                                 listData.RemoveAt(filterList.index);
                                 filterList.index = Mathf.Max(0, filterList.index - 1);
                                 filterList.GrabKeyboardFocus();
@@ -147,7 +141,7 @@ namespace bTools.ImportPresets
 
                         if (GUILayout.Button(ImportPresetsResources.PlusIcon, EditorStyles.label, GUILayout.Width(16)))
                         {
-                            Undo.RecordObject(ImportPresetsResources.ImportSettingsData, "Added Path Filter");
+                            Undo.RecordObject(ImportPresetsResources.ImportSettingsData, "Added Filter");
                             listData.Add(string.Empty);
                             filterList.index = listData.Count - 1;
                             filterList.GrabKeyboardFocus();
@@ -158,7 +152,7 @@ namespace bTools.ImportPresets
 
                 if (showFilter)
                 {
-                    GUILayout.Space(2);
+                    GUILayout.Space(-2);
                     EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false, 2), ImportPresetsResources.HeaderSeparatorColor);
                     GUILayout.Space(2);
 
@@ -173,79 +167,80 @@ namespace bTools.ImportPresets
             return pathFilterArea;
         }
 
-        protected string GetMatchingPaths()
+        private (string, int, int) GetMatchingPaths()
         {
-            if (pathNameFilter.Length == 0 && fileNameFilter.Length == 0)
+            if (pathFilters.Count == 0)
             {
-                return "Empty filters means this will be applied to everything";
+                string info = "Empty path filters means this will be applied to every folder";
+                return (info, 1, info.Length);
             }
 
             StringBuilder matchingPaths = new StringBuilder();
+            int matchCount = 0;
+            int longestString = 0;
             foreach (var item in Directory.GetDirectories(Application.dataPath, "*", SearchOption.AllDirectories))
             {
                 if (PathFilterTest(item))
                 {
-                    matchingPaths.Append("Assets" + item.Replace(Application.dataPath, string.Empty) + "\r\n");
+                    matchCount++;
+                    string success = "Assets" + item.Replace(Application.dataPath, string.Empty) + "\r\n";
+                    if (success.Length > longestString) longestString = success.Length;
+                    matchingPaths.Append(success);
                 }
             }
 
             if (matchingPaths.Length == 0)
             {
+                matchCount++;
+                longestString = 10;
                 matchingPaths.Append("No match");
             }
 
-            return matchingPaths.ToString();
+            return (matchingPaths.ToString(), matchCount, longestString);
         }
 
         internal bool FilenameFilterTest(string path)
         {
-            bool filenameTest = false;
-
-            // Split string into multiple filters
-            string[] filenameFilterSplit = fileNameFilter.Split(filterSep, System.StringSplitOptions.RemoveEmptyEntries);
             string fileName = Path.GetFileName(path);
 
             //Check if filter is empty
-            if (fileNameFilter == string.Empty)
+            if (filenameFilters == null || filenameFilters.Count == 0)
             {
-                filenameTest = true;
+                return true;
             }
 
             // Check if filename contains what we want
-            for (int i = 0; i < filenameFilterSplit.Length; i++)
+            for (int i = 0; i < filenameFilters.Count; i++)
             {
-                if (path.Contains(filenameFilterSplit[i]))
+                if (string.IsNullOrEmpty(filenameFilters[i])) continue;
+                if (fileName.Contains(filenameFilters[i]))
                 {
-                    filenameTest = true;
+                    return true;
                 }
             }
 
-            return filenameTest;
+            return false;
         }
 
         internal bool PathFilterTest(string path)
         {
-            bool pathTest = false;
-
-            // Split string into multiple filters
-            string[] pathFilterSplit = pathNameFilter.Split(filterSep, System.StringSplitOptions.RemoveEmptyEntries);
-
             //Check if filter is empty
-            if (pathNameFilter == string.Empty)
+            if (pathFilters == null || pathFilters.Count == 0)
             {
-                pathTest = true;
+                return true;
             }
 
             // Check if path contains what we want
-            for (int i = 0; i < pathFilterSplit.Length; i++)
+            for (int i = 0; i < pathFilters.Count; i++)
             {
-                if (path.Contains(pathFilterSplit[i]))
+                if (string.IsNullOrEmpty(pathFilters[i])) continue;
+                if (path.Contains(pathFilters[i]))
                 {
-                    pathTest = true;
+                    return true;
                 }
             }
 
-            return pathTest;
+            return false;
         }
     }
 }

@@ -58,7 +58,7 @@ namespace bTools.ImportPresets
             }
         }
 
-        internal static Texture2D m_MinusIcon;
+        private static Texture2D m_MinusIcon;
         internal static Texture2D MinusIcon
         {
             get

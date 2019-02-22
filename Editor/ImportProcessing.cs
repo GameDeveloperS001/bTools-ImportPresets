@@ -27,7 +27,7 @@ namespace bTools.ImportPresets
             //ApplyImportPresets(ImportSettingsData.textureImportSettingsList);
         }
 
-        private void ApplyImportPresets(List<ImportConfigBase> presets)
+        private void ApplyImportPresets(List<ImportConfig> presets)
         {
             // Make sure Editor is not compiling
             if (EditorApplication.isCompiling) return;

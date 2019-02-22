@@ -8,12 +8,6 @@ namespace bTools.ImportPresets
     {
         [SerializeField]
         [HideInInspector]
-        public List<MeshImportConfig> meshImportSettingsList = new List<MeshImportConfig>();
-        [SerializeField]
-        [HideInInspector]
-        public List<AudioImportConfig> audioImportSettingsList = new List<AudioImportConfig>();
-        [SerializeField]
-        [HideInInspector]
-        public List<TextureImportConfig> textureImportSettingsList = new List<TextureImportConfig>();
+        public List<ImportConfig> importConfigs = new List<ImportConfig>();
     }
 }
