@@ -6,8 +6,7 @@ namespace bTools.ImportPresets
     [System.Serializable]
     public class SavedImportSettings : ScriptableObject
     {
-        [SerializeField]
-        [HideInInspector]
+        [SerializeField, HideInInspector]
         public List<ImportConfig> importConfigs = new List<ImportConfig>();
     }
 }

@@ -1,53 +1,38 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using bTools.CodeExtensions;
-using System.IO;
-using UnityEditor.Presets;
-using System.Collections.Generic;
 
 namespace bTools.ImportPresets
 {
     public class ImportProcessing : AssetPostprocessor
     {
-        private char[] filterSep = new char[] { ';' };
-
-        private void OnPreprocessModel()
+        private void OnPreprocessAsset()
         {
-            //ApplyImportPresets(ImportSettingsData.meshImportSettingsList);
-
-        }
-
-        private void OnPreprocessAudio()
-        {
-            //ApplyImportPresets(ImportSettingsData.audioImportSettingsList);
-        }
-
-        private void OnPreprocessTexture()
-        {
-            //ApplyImportPresets(ImportSettingsData.textureImportSettingsList);
-        }
-
-        private void ApplyImportPresets(List<ImportConfig> presets)
-        {
-            // Make sure Editor is not compiling
+            // Make sure Editor is not compiling.
             if (EditorApplication.isCompiling) return;
 
-            //Make sure there are at least one settings file
-            if (presets.Count <= 0) return;
+            // Make sure there is at least one settings file.
+            List<ImportConfig> presetsList = ImportPresetsResources.DataAsset.importConfigs;
+            if (0 >= presetsList.Count) return;
 
-            //Check config conditions
-            for (int i = 0; i < presets.Count; i++)
+            // Check config conditions.
+            for (int i = 0; i < presetsList.Count; i++)
             {
-                bool filenameTest = presets[i].FilenameFilterTest(assetPath);
-                bool pathTest = presets[i].PathFilterTest(assetPath);
-                if (filenameTest && pathTest)
+                if (!presetsList[i].isEnabled) continue; // Skip if preset is disabled.
+                if (presetsList[i].targetPreset == null) continue; // Skip if preset is empty.
+                if (!presetsList[i].targetPreset.CanBeAppliedTo(assetImporter)) continue; // Skip if preset cannot be applied to this.
+
+                bool filenameTest = presetsList[i].FilenameFilterTest(assetPath);
+                if (!filenameTest) continue; // Check filename first, less expensive.
+
+                bool pathTest = presetsList[i].PathFilterTest(assetPath);
+                if (!pathTest) continue;
+
+                // Check that the asset isn't already imported (Apply triggers this script).
+                if (AssetDatabase.LoadAssetAtPath<Object>(assetPath) == null)
                 {
-                    //Check that the asset doesn't already exist (Apply triggers this script)
-                    if (AssetDatabase.LoadAssetAtPath<Object>(assetPath) == null)
-                    {
-                        presets[i].targetPreset.ApplyTo(assetImporter);
-                        break;
-                    }
+                    presetsList[i].targetPreset.ApplyTo(assetImporter);
+                    break;
                 }
             }
         }

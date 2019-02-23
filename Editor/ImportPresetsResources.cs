@@ -1,6 +1,7 @@
-﻿using System.Collections;
+﻿using System.IO;
+using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,43 +9,47 @@ namespace bTools.ImportPresets
 {
     public static class ImportPresetsResources
     {
-        private static string k_settingsAssetPath;
-        internal static string SettingsAssetPath
+        private static string m_DataAssetPath;
+        internal static string DataAssetPath
         {
             get
             {
-                if (string.IsNullOrEmpty(k_settingsAssetPath))
+                if (string.IsNullOrEmpty(m_DataAssetPath))
                 {
-                    k_settingsAssetPath = Directory.GetDirectories(Application.dataPath, "bTools", SearchOption.AllDirectories)[0];
-                    k_settingsAssetPath = k_settingsAssetPath.Replace(Application.dataPath, "Assets");
-                    k_settingsAssetPath = k_settingsAssetPath.Replace('\\', '/');
-                    k_settingsAssetPath = k_settingsAssetPath + @"/ImportPresets/Settings/bToolsImportPresets.asset";
-
+                    m_DataAssetPath = Directory.GetDirectories(Application.dataPath, "bTools", SearchOption.AllDirectories).FirstOrDefault();
+                    if (string.IsNullOrEmpty(m_DataAssetPath))
+                    {
+                        Debug.LogWarning("Could not find bTools folder - creating one");
+                        m_DataAssetPath = Directory.CreateDirectory(Application.dataPath + "bTools").FullName;
+                    }
+                    m_DataAssetPath = m_DataAssetPath.Replace(Application.dataPath, "Assets");
+                    m_DataAssetPath = m_DataAssetPath.Replace('\\', '/');
+                    m_DataAssetPath = m_DataAssetPath + @"/ImportPresets/Data/bToolsImportPresets.asset";
                 }
 
-                return k_settingsAssetPath;
+                return m_DataAssetPath;
             }
         }
 
-        private static SavedImportSettings m_importSettingsData;
-        public static SavedImportSettings ImportSettingsData
+        private static SavedImportSettings m_DataAsset;
+        public static SavedImportSettings DataAsset
         {
             get
             {
-                if (m_importSettingsData == null)
+                if (m_DataAsset == null)
                 {
-                    m_importSettingsData = AssetDatabase.LoadAssetAtPath<SavedImportSettings>(SettingsAssetPath);
+                    m_DataAsset = AssetDatabase.LoadAssetAtPath<SavedImportSettings>(DataAssetPath);
 
-                    if (m_importSettingsData == null)
+                    if (m_DataAsset == null)
                     {
-                        if (!Directory.Exists(Path.GetDirectoryName(SettingsAssetPath))) Directory.CreateDirectory(Path.GetDirectoryName(SettingsAssetPath));
-                        m_importSettingsData = ScriptableObject.CreateInstance<SavedImportSettings>();
-                        AssetDatabase.CreateAsset(m_importSettingsData, SettingsAssetPath);
+                        if (!Directory.Exists(Path.GetDirectoryName(DataAssetPath))) Directory.CreateDirectory(Path.GetDirectoryName(DataAssetPath));
+                        m_DataAsset = ScriptableObject.CreateInstance<SavedImportSettings>();
+                        AssetDatabase.CreateAsset(m_DataAsset, DataAssetPath);
                         AssetDatabase.SaveAssets();
                     }
                 }
 
-                return m_importSettingsData;
+                return m_DataAsset;
             }
         }
 
@@ -69,5 +74,6 @@ namespace bTools.ImportPresets
         }
 
         internal static readonly Color HeaderSeparatorColor = new Color32(237, 166, 3, 255);
+        internal static readonly GUIStyle MiniLabelStyle = new GUIStyle(EditorStyles.miniLabel) { fontSize = 9 };
     }
 }
