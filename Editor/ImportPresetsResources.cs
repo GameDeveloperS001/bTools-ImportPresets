@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
+using UnityEditor;
 
 namespace bTools.ImportPresets
 {
@@ -75,5 +75,6 @@ namespace bTools.ImportPresets
 
         internal static readonly Color HeaderSeparatorColor = new Color32(237, 166, 3, 255);
         internal static readonly GUIStyle MiniLabelStyle = new GUIStyle(EditorStyles.miniLabel) { fontSize = 9 };
+        internal const string VerboseApplyKey = "bTools.ImportPresets.VerboseApply";
     }
 }

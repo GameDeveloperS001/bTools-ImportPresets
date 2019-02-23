@@ -12,24 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63e2d4362425b2c4999a430211e9eb56, type: 3}
   m_Name: bToolsImportPresets
   m_EditorClassIdentifier: 
-  importConfigs:
-  - saveName: BeautifulPreset
-    isEnabled: 1
-    targetPreset: {fileID: 2655988077585873504, guid: 49044ec58f3be7b48972a6b834c1692e,
-      type: 2}
-    pathFilters:
-    - DevTest\Import
-    - 
-    filenameFilters: []
-  - saveName: New Preset
-    isEnabled: 1
-    targetPreset: {fileID: 2655988077585873504, guid: 7eda76633221fde42a4ab78077f58aa3,
-      type: 2}
-    pathFilters: []
-    filenameFilters: []
-  - saveName: New Preset
-    isEnabled: 1
-    targetPreset: {fileID: 2655988077585873504, guid: 7fb21e1661087f04e920f7c5c443ebbf,
-      type: 2}
-    pathFilters: []
-    filenameFilters: []
+  importConfigs: []

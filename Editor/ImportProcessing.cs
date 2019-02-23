@@ -31,8 +31,13 @@ namespace bTools.ImportPresets
                 // Check that the asset isn't already imported (Apply triggers this script).
                 if (AssetDatabase.LoadAssetAtPath<Object>(assetPath) == null)
                 {
-                    presetsList[i].targetPreset.ApplyTo(assetImporter);
-                    break;
+                    bool success = presetsList[i].targetPreset.ApplyTo(assetImporter);
+                    if (success)
+                    {
+                        if (EditorPrefs.GetBool(ImportPresetsResources.VerboseApplyKey, false))
+                            Debug.Log($"<color=green>[Import Presets]</color> Successfully applied import preset <i>{presetsList[i].saveName}</i> to: \n {assetPath}");
+                        break;
+                    }
                 }
             }
         }
