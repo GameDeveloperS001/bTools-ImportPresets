@@ -1,18 +1,12 @@
-# **bTools - Plugins for Unity**  
-## Import Presets
+# **bTools - Import Presets**  
 
-**Automatically setup newly imported assets.**  
-*Requires bTools Core*
+ImportPresets allows you to automatically apply Unity's [Presets](https://docs.unity3d.com/Manual/Presets.html) on newly imported assets, based on path and filename filters.  
+It allows you to automatically set all textures in the `Assets\Textures\UI` folder to be imported as sprites, or models in any `Props` folder to be setup with rig and animations disabled for example.  
+It works using Unity's Presets, and thus can be setup to automate the import settings of any asset type supported by Presets. 
 
-Migrated to [GitLab](https://gitlab.com/btools/bTools), but mirrored on GitHub
+For more information, check out the [Documentation](https://batsugames.gitlab.io/btools/btools-documentation-pages/articles/ImportPresets.html)  
 
-### Features
-- Setup new Meshes, Textures and Audio assets
-- Disable/Enable presets
-- Filter based on path and filename
+---
 
-![image](https://i.imgur.com/inBM9Zo.png)
-
-For more information, check out the [API and Documentation](https://btools.gitlab.io/btools-documentation-pages/)
-
-If you encounter any bugs or have any suggestions, please post an issue or merge request (on GitLab) !
+Migrated to [GitLab](https://gitlab.com/batsugames/btools/bTools-ImportPresets), but mirrored on GitHub  
+If you encounter any bugs or have any suggestions, please post an issue/merge request (on GitLab) !
