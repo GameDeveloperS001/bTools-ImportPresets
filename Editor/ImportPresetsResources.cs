@@ -73,8 +73,17 @@ namespace bTools.ImportPresets
             }
         }
 
+        private static GUIStyle m_MiniLabelStyle;
+        internal static GUIStyle MiniLabelStyle
+        {
+            get
+            {
+                if (m_MiniLabelStyle == null) m_MiniLabelStyle = new GUIStyle(EditorStyles.miniLabel) { fontSize = 9 };
+                return m_MiniLabelStyle;
+            }
+        }
+
         internal static readonly Color HeaderSeparatorColor = new Color32(237, 166, 3, 255);
-        internal static readonly GUIStyle MiniLabelStyle = new GUIStyle(EditorStyles.miniLabel) { fontSize = 9 };
         internal const string VerboseApplyKey = "bTools.ImportPresets.VerboseApply";
     }
 }
