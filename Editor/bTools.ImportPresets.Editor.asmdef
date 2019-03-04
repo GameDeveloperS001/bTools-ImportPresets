@@ -1,12 +1,14 @@
 {
     "name": "bTools.ImportPresets.Editor",
-    "references": [
-        "bTools.CodeExtensions",
-        "bTools.CodeExtensions.Editor",
-        "bTools.Core.Editor"
-    ],
+    "references": [],
+    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
-    "excludePlatforms": []
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
 }
