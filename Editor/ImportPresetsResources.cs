@@ -38,13 +38,28 @@ namespace bTools.ImportPresets
             {
                 if (m_DataAsset == null)
                 {
-                    m_DataAsset = AssetDatabase.LoadAssetAtPath<SavedImportSettings>(DataAssetPath);
+                    string[] allAssetPaths = AssetDatabase.GetAllAssetPaths();
+
+                    for (int i = 0; i < allAssetPaths.Length; i++)
+                    {
+                        Object obj = AssetDatabase.LoadAssetAtPath<Object>(allAssetPaths[i]);
+
+                        if (obj == null)
+                            continue;
+
+                        if (obj.GetType() == typeof(SavedImportSettings))
+                        {
+                            m_DataAsset = (SavedImportSettings) obj;
+                            break;
+                        }
+                    }
 
                     if (m_DataAsset == null)
                     {
-                        if (!Directory.Exists(Path.GetDirectoryName(DataAssetPath))) Directory.CreateDirectory(Path.GetDirectoryName(DataAssetPath));
+                        string path = DataAssetPath.Replace(Application.dataPath, @"Assets/");
+                        if (!Directory.Exists(Path.GetDirectoryName(path))) Directory.CreateDirectory(Path.GetDirectoryName(path));
                         m_DataAsset = ScriptableObject.CreateInstance<SavedImportSettings>();
-                        AssetDatabase.CreateAsset(m_DataAsset, DataAssetPath);
+                        AssetDatabase.CreateAsset(m_DataAsset, path);
                         AssetDatabase.SaveAssets();
                     }
                 }
